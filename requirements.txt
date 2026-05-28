@@ -1,0 +1,5 @@
+bs4>=0.0.2
+uvicorn>=0.48.0
+mcp>=1.27.1
+starlette>=1.1.0
+httpx>=0.28.1
