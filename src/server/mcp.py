@@ -14,9 +14,8 @@ for tool_name, tool_func in tools.items():
     mcp.add_tool(
         fn=tool_func,
         name=tool_name.replace("_tool", ""),
-        description=descriptions.get(tool_name),
-        structured_output=True
+        description=descriptions.get(tool_name)
     )
 
 if __name__ == "__main__":
-    mcp.run(transport='stdio')
+    pass

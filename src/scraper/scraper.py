@@ -82,7 +82,7 @@ class Scraper:
         result = {
             "data": {
                 "href": href,
-                "details_html": bs.find("div", {"role": "main"})
+                "details_html": bs.find("div", {"role": "main"}).decode_contents()
             }
         }
 
