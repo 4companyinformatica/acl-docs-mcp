@@ -1,11 +1,12 @@
 from typing import Annotated, Literal, Dict, Optional, List
 from src.scraper.scraper import Scraper
 import json
+from src.LLM_Context.directives import directives
 
 
 scraper = Scraper(analytics_version="19")
 
-async def command_list_tool(
+async def mcp_get_acl_commands_or_functions_list(
     command_type: Annotated[Literal["commands", "functions"], "Defines wheter to fetch the list of commands or functions"],
     filter_command: Optional[Annotated[str, "A string to filter the commands or functions by name (optional)"]] = None,
     filter_description: Optional[Annotated[str, "A string to filter the commands or functions by description (optional)"]] = None
@@ -26,10 +27,17 @@ async def command_list_tool(
         ]
     return json.dumps(command_list, ensure_ascii=False)
 
-async def command_details_tool(
+async def mcp_get_acl_command_or_function_details(
     command_href: Annotated[str, "The href of the command or function to fetch details for"],
     command_type: Annotated[Literal["commands", "functions"], "Defines whether the command is a command or a function"]
 ) -> str:
     
     result = await scraper.command_details(command_type=command_type, href=command_href)
     return json.dumps(result, ensure_ascii=False)
+
+async def mcp_get_acl_scripting_tips() -> str:
+    return json.dumps(
+        {
+            "about_ACL_Analytics": directives
+        }
+    )
