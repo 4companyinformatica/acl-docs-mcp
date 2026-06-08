@@ -2,12 +2,13 @@ from bs4 import BeautifulSoup
 import httpx
 from typing import Literal, List, Dict, Annotated
 from util.cacher import Cacher
+from settings import settings
 
-cache = Cacher(ttl=24*60*60)
+cache = Cacher(ttl=settings.cache_ttl)
 
 class Scraper:
-    def __init__(self, 
-                analytics_version: Annotated[str, "The version of the analytics platform to scrape"] = "19"
+    def __init__(self,
+                analytics_version: Annotated[str, "The version of the analytics platform to scrape"] = settings.acl_version
                 ) -> None:
 
         self.analytics_version = analytics_version

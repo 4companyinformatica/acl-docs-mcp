@@ -2,9 +2,10 @@ from typing import Annotated, Literal, Dict, Optional, List
 from src.scraper.scraper import Scraper
 import json
 from src.LLM_Context.directives import directives
+from settings import settings
 
 
-scraper = Scraper(analytics_version="19")
+scraper = Scraper(analytics_version=settings.acl_version)
 
 async def mcp_get_acl_commands_or_functions_list(
     command_type: Annotated[Literal["commands", "functions"], "Defines wheter to fetch the list of commands or functions"],

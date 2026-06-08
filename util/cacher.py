@@ -3,6 +3,7 @@ from typing import Optional, Any
 import pathlib
 import json
 from datetime import datetime, timezone
+from settings import settings
 
 
 """
@@ -15,7 +16,7 @@ Estrutura do cache:
 """
 class Cacher:
     def __init__(self, ttl: Optional[int] = None) -> None:
-        self.cache_folder = pathlib.Path("cache/")
+        self.cache_folder = pathlib.Path(settings.cache_folder)
         self.cache_folder.mkdir(parents=True, exist_ok=True)
         self.ttl = ttl
 

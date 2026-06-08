@@ -3,14 +3,15 @@ from starlette.routing import Mount, Route
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse, FileResponse
 from src.server.mcp import mcp
+from settings import settings
 import contextlib
 
 
 def info(request: Request) -> JSONResponse:
         return JSONResponse(
             {
-                "status": "MCP Server is running", 
-                "version": "1.0.0"
+                "status": "MCP Server is running",
+                "version": settings.server_version
             }
         )
 

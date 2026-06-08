@@ -4,6 +4,7 @@ import uvicorn
 from starlette.applications import Starlette
 from src.server.routes import Routes
 from src.middlewares.auth import ASGIAuth
+from settings import settings
 import contextlib
 
 
@@ -27,7 +28,7 @@ if args.transport == "http":
 
 if __name__ == "__main__":
 
-        if args.transport == "stdio":
-            mcp.run(transport="stdio")
-        elif args.transport == "http":    
-            uvicorn.run("main:app", host=args.hostname, port=8000, reload=True)
+    if args.transport == "stdio":
+        mcp.run(transport="stdio")
+    elif args.transport == "http":    
+        uvicorn.run("main:app", host=args.hostname, port=settings.server_port, reload=True)

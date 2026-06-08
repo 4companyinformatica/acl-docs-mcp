@@ -4,11 +4,8 @@ from starlette.datastructures import Headers
 import aiosqlite
 from datetime import datetime, timezone, timedelta
 from util.exceptions import *
+from settings import settings
 
-
-FREE_ROUTES = [
-    "/info"
-]
 
 class ASGIAuth:
     def __init__(self, app):
@@ -21,7 +18,7 @@ class ASGIAuth:
             return
 
         # 2. Rotas públicas liberadas
-        if scope["path"] in FREE_ROUTES:
+        if scope["path"] in settings.free_routes:
             await self.app(scope, receive, send)
             return
 
@@ -43,12 +40,12 @@ class ASGIAuth:
         except TokenExpiredError:
             await self.middleware_message(send, 401, "Token expirado")
             return
-        
+
         except sqlite3.DatabaseError as e:
             print(f"[ASGIAuth] DB error: {e}")
             await self.middleware_message(send, 500, "Erro interno do servidor")
             return
-        
+
         except Exception as e:
             print(f"[ASGIAuth] DB error: {e}")
             await self.middleware_message(send, 500, "Erro interno do servidor")
@@ -65,9 +62,9 @@ class ASGIAuth:
         scope["state"]["user"] = user_info
 
         # Tudo certo! Passa o controle para o próximo middleware ou app
-        await self.app(scope, receive, send)       
+        await self.app(scope, receive, send)
 
-        
+
     # Envia os cabeçalhos da resposta (HTTP 401)
     async def middleware_message(self, send, status_code: int, message: str):
         """Função auxiliar para responder em formato JSON usando o protocolo ASGI"""
@@ -81,8 +78,8 @@ class ASGIAuth:
     async def verify_token(self, token: str) -> tuple[bool, dict | None]:
         db_command = """
         -- Recupera informações relacionadas ao token, se válido
-        SELECT user_auth.user_id, user_auth.created_at, user_auth.days_to_expire, user_info.user_name, user_info.user_role 
-        FROM user_auth 
+        SELECT user_auth.user_id, user_auth.created_at, user_auth.days_to_expire, user_info.user_name, user_info.user_role
+        FROM user_auth
         JOIN user_info ON user_auth.user_id = user_info.user_id
         WHERE user_auth.token = ?
         """
@@ -92,24 +89,24 @@ class ASGIAuth:
         UPDATE user_auth SET last_used_at = ? WHERE token = ?
         """
 
-        async with aiosqlite.connect("./db/auth.db") as db:
+        async with aiosqlite.connect(settings.db_path) as db:
             async with db.execute(db_command, (token,)) as cursor:
                 result = await cursor.fetchone()
                 # retorna tipo: (2, '2026-06-05 20:07:39', 30, 'Bob', 'supervisor')
-                
+
                 if result:
                     # Verificar expiração do token
-                    BRT = timezone(timedelta(hours=-3))
+                    BRT = timezone(timedelta(hours=settings.timezone_utc_offset))
                     rightnow = datetime.now(tz=BRT)
-                    created_at = datetime.strptime(result[1], "%Y-%m-%d %H:%M:%S").replace(tzinfo=BRT)
+                    created_at = datetime.strptime(result[1], settings.datetime_format).replace(tzinfo=BRT)
 
                     if result[2] is not None:
                         expire_at = created_at + timedelta(days=result[2])
                         if rightnow > expire_at:
                             raise TokenExpiredError("Token expirado")
-                        
+
                     # Atualizar a data de último uso do token
-                    await db.execute(db_command2, (rightnow.strftime("%Y-%m-%d %H:%M:%S"), token))
+                    await db.execute(db_command2, (rightnow.strftime(settings.datetime_format), token))
                     await db.commit()
 
                     return True, {
