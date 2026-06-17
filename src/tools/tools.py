@@ -36,6 +36,26 @@ async def mcp_get_acl_command_or_function_details(
     result = await scraper.command_details(command_type=command_type, href=command_href)
     return json.dumps(result, ensure_ascii=False)
 
+async def mcp_get_acl_header_tags_list(
+    filter_tag_name: Optional[Annotated[str, "A string to filter tags by name (optional)"]] = None,
+    filter_tag_type: Optional[Annotated[str, "A string to filter tags by type, e.g. 'ANALYTIC', 'PARAM', 'PASSWORD' (optional)"]] = None,
+    filter_description: Optional[Annotated[str, "A string to filter tags by description (optional)"]] = None
+) -> str:
+    tag_list = await scraper.tag_list()
+    if filter_tag_name:
+        tag_list["data"] = [t for t in tag_list["data"] if filter_tag_name.lower() in t["tag_name"].lower()]
+    if filter_tag_type:
+        tag_list["data"] = [t for t in tag_list["data"] if filter_tag_type.lower() in t["tag_type"].lower()]
+    if filter_description:
+        tag_list["data"] = [t for t in tag_list["data"] if filter_description.lower() in t["description"].lower()]
+    return json.dumps(tag_list, ensure_ascii=False)
+
+async def mcp_get_acl_header_tag_details(
+    tag_href: Annotated[str, "The href of the analytic header tag to fetch details for"]
+) -> str:
+    result = await scraper.tag_details(href=tag_href)
+    return json.dumps(result, ensure_ascii=False)
+
 async def mcp_get_acl_scripting_tips() -> str:
     return json.dumps(
         {
