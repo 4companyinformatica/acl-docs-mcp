@@ -1,13 +1,13 @@
 
 from mcp.server.fastmcp import FastMCP
-from mcp.server.stdio import stdio_server
 from src.tools.tools import *
 from src.tools.tools_names import tools_names
 from src.LLM_Context.directives import directives
 from src.LLM_Context.tools_descriptions import descriptions
+from settings import settings
 
 
-mcp = FastMCP(name="ACL Analytics Helper", instructions=directives)
+mcp = FastMCP(name=settings.mcp_server_name, instructions=directives)
 
 tools = {tool_name: tool_func for tool_name, tool_func in globals().items() if tool_name.startswith("mcp_") and callable(tool_func)}
 

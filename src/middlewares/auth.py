@@ -11,6 +11,7 @@ class ASGIAuth:
     def __init__(self, app):
         self.app = app
 
+    # TODO: Checar se o lifespan do mcp entra aqui
     async def __call__(self, scope, receive, send):
         # 1. Ignorar tudo que não for requisição HTTP (ex: WebSockets ou Lifespan)
         if scope["type"] != "http":

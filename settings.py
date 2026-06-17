@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     mcp_version: str = Field("0.4.0-beta", description="Version of the MCP server")
     server_version: str = Field("1.0.0", description="API version reported in /info endpoint")
     server_port: int = Field(8000, description="Port for the HTTP server")
+    mcp_server_name: str = Field("ACL Analytics Helper MCP", description='Name of the server passed to the LLM')
 
     # ACL Scraper
     acl_version: str = Field("19", description="Version of ACL Analytics to target")
