@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     server_version: str = Field("1.0.0", description="API version reported in /info endpoint")
     server_port: int = Field(8000, description="Port for the HTTP server")
     mcp_server_name: str = Field("ACL Analytics Helper MCP", description='Name of the server passed to the LLM')
+    streamable_http_path: str | None = Field(None, description="Override path to the MCP endpoint on the server (e.g. '/sse/mcp')")
 
     # ACL Scraper
     acl_version: str = Field("19", description="Version of ACL Analytics to target")
@@ -33,6 +34,9 @@ class Settings(BaseSettings):
     # CORS
     allowed_origins: list[str] = Field(default_factory=list, description="List of allowed origins for CORS")
     session_timeout: int = Field(3600, description="Session timeout duration in seconds")
+
+    # Assets
+    acl_examples: str = Field("assets/acl_examples")
 
 
 settings = Settings()
